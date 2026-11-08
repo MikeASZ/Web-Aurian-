@@ -1,6 +1,6 @@
 # Documentación del código
 
-El código contiene **31,98 % de líneas de comentario** sobre las líneas no vacías del conjunto del código fuente: **1 362 de 4 259**.
+El código contiene **31,99 % de líneas de comentario** sobre las líneas no vacías del conjunto del código fuente: **1 364 de 4 264**.
 
 La medida incluye JavaScript, HTML, CSS, SQL y pruebas. Cuenta líneas completas de comentarios y sus delimitadores; excluye líneas vacías, Markdown, JSON, archivos generados y datos privados. El objetivo del 30 % se aplica al conjunto del proyecto, no a cada archivo individual.
 
@@ -22,7 +22,7 @@ node scripts/comment-coverage.mjs --check
 | --- | ---: | ---: | ---: |
 | src/auth.js | 76 | 114 | 66.7% |
 | src/domain.js | 135 | 286 | 47.2% |
-| src/worker.js | 199 | 478 | 41.6% |
+| src/worker.js | 201 | 483 | 41.6% |
 | public/admin.html | 63 | 342 | 18.4% |
 | public/admin.js | 154 | 453 | 34.0% |
 | public/common.js | 66 | 136 | 48.5% |

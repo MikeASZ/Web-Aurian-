@@ -443,7 +443,12 @@ async function handle(request, env) {
     if (!['GET', 'HEAD'].includes(method)) {
         throw new HttpError(405, 'Método no permitido.');
     }
-    if (path === '/admin' || path === '/admin/') {
+    // Las rutas de las páginas se resuelven aquí; los recursos no deben volver
+    // a normalizar /admin.html hacia /admin porque producirían un bucle.
+    if (path === '/') {
+        url.pathname = '/index.html';
+    }
+    else if (path === '/admin' || path === '/admin/') {
         url.pathname = '/admin.html';
     }
     return env.ASSETS.fetch(new Request(url, request));
