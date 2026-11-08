@@ -118,31 +118,47 @@ Antes de guardar otra versión, revisa los archivos modificados en el panel **Co
 
 El repositorio de GitHub es público: permite consultar el código, las pruebas y las migraciones. Almacenar allí el código no publica la aplicación en Cloudflare ni respalda los datos de `.local/`. Para conservar productos, fotografías, configuración y acceso personalizado, guarda por separado una copia privada de la base y sus secretos de arranque.
 
-## Publicar en tu cuenta gratuita de Cloudflare
+## Entorno publicado en Cloudflare
 
-Para publicar se necesita una cuenta de Cloudflare. La aplicación utiliza Workers para el servidor y D1 para la base de datos.
+- Menú: https://aurian-menu.aurian-menu.workers.dev/
+- Administración: https://aurian-menu.aurian-menu.workers.dev/admin
 
-Con Node.js y npm instalados, desde esta carpeta:
+El servidor se ejecuta en Cloudflare Workers y utiliza la base D1 `aurian`. Se trasladaron el catálogo, las imágenes, la configuración y el acceso personalizado de la instalación local. Las sesiones de desarrollo no se trasladan; inicia sesión con tu usuario y contraseña actuales.
+
+La base local y la publicada son independientes. Para actualizar el menú que consultan los clientes, utiliza el panel de la dirección publicada. Los cambios de productos en tu computadora no se copian automáticamente a Internet.
+
+### Publicar actualizaciones del código
+
+Desde la carpeta del proyecto, instala las versiones registradas en el archivo de dependencias:
 
 ```powershell
-npx wrangler login
-npx wrangler d1 create aurian
+npm.cmd ci
 ```
 
-Copia el `database_id` real que devuelve Cloudflare al campo correspondiente en `wrangler.jsonc`, reemplazando el texto de ejemplo. El nombre del Worker (`aurian-menu`) se puede cambiar si hace falta.
+Si necesitas autorizar esta computadora, el acceso por código evita depender de un retorno a localhost:
 
 ```powershell
-npx wrangler d1 migrations apply aurian --remote
-node scripts/admin-key.mjs
-npx wrangler deploy
-npx wrangler secret bulk .dev.vars
+npx.cmd wrangler login --device --browser=false
+npx.cmd wrangler whoami
 ```
 
-`admin-key.mjs` crea `.dev.vars` con el usuario y el hash del acceso local. Ese archivo está ignorado por Git. `secret bulk` carga esos valores como secretos del Worker. No subas `.dev.vars`, `.local/` ni la contraseña al repositorio. Durante el intervalo anterior a cargar los secretos, el acceso administrativo responde que aún no está configurado.
+Comprueba el código y publica la actualización:
 
-Wrangler mostrará la dirección gratuita `workers.dev`. Entra a `/admin` con el acceso generado y configura los datos reales. Confirma horario y catálogo solamente cuando estén revisados. Aunque habilites pedidos, esta página **no envía mensajes automáticamente**.
+```powershell
+npm.cmd run test
+npm.cmd run comments
+npx.cmd wrangler deploy
+```
 
-La gratuidad depende de mantenerse dentro de las cuotas de Cloudflare, no implica capacidad ilimitada. D1 Free permite actualmente una base de hasta 500 MB; las imágenes de este catálogo se limitan mucho antes de ese tamaño. Consulta las cuotas antes de activar otros productos o planes.
+El despliegue actualiza el código y los recursos de la interfaz; no reemplaza el catálogo de D1. Los secretos ya configurados se conservan. Si agregas una migración nueva, aplícala con `npx.cmd wrangler d1 migrations apply aurian --remote` después de revisar sus cambios.
+
+### Instalar en otra cuenta
+
+`wrangler.jsonc` contiene el identificador de la base del entorno publicado. Para una instalación independiente, crea tu propia base con `npx.cmd wrangler d1 create aurian`, coloca su identificador en la configuración y aplica las migraciones. Configura después los secretos administrativos de esa instalación. No reutilices el identificador de la base de otra cuenta.
+
+La importación inicial de los datos se ejecutó una sola vez sobre una D1 nueva. Los archivos privados de traslado permanecen dentro de `.local/deploy/`, fuera del repositorio. No repitas esa importación para actualizar el código, porque sustituye el catálogo y la configuración del destino.
+
+La gratuidad depende de mantenerse dentro de las cuotas de Cloudflare, no implica capacidad ilimitada. Consulta las cuotas antes de activar otros productos o planes.
 
 ## Documentación y programación funcional
 

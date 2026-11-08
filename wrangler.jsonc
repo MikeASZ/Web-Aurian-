@@ -13,7 +13,7 @@
         {
             "binding": "DB",
             "database_name": "aurian",
-            "database_id": "REEMPLAZAR_CON_ID_REAL_DE_D1",
+            "database_id": "64e152db-610e-43ee-8190-b2c353af1308",
             "migrations_dir": "migrations"
         }
     ],

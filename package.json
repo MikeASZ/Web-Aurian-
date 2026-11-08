@@ -14,5 +14,8 @@
         "cloudflare:dev": "npx wrangler dev",
         "deploy": "npx wrangler deploy",
         "comments": "node scripts/comment-coverage.mjs --check"
+    },
+    "devDependencies": {
+        "wrangler": "^4.158.0"
     }
 }
