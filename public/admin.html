@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="es-MX">
+    <!-- Recursos y metadatos de la página. -->
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="robots" content="noindex,nofollow">
+        <meta name="theme-color" content="#174e79">
+        <title>
+            Aurian · Administración
+        </title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="module" src="/admin.js">
+        </script>
+    </head>
+    <body>
+        <a class="skip" href="#main">
+            Saltar al contenido
+        </a>
+        <header>
+            <div class="header-inner">
+                <div>
+                    <div class="word">
+                        AURIAN
+                    </div>
+                    <p class="kicker">
+                        Administración del negocio
+                    </p>
+                </div>
+                <a class="header-link" href="/">
+                    Ver menú
+                </a>
+            </div>
+        </header>
+        <!-- Contenido principal: vistas y formularios del proyecto. -->
+        <main id="main">
+            <div class="notice" id="notice" role="status" hidden>
+            </div>
+            <!--
+                Formulario inicial para autenticar al administrador.
+                autocomplete ayuda al gestor de contraseñas del navegador sin que el código
+                guarde el secreto.
+                No tiene reglas de longitud para la contraseña; el campo sí debe estar
+                completo.
+            -->
+            <section class="panel narrow" id="login-screen">
+                <h1>
+                    Bienvenido.
+                </h1>
+                <p class="muted">
+                    Inicia sesión para actualizar tu menú.
+                </p>
+                <form id="login-form">
+                    <div class="fields">
+                        <label class="wide">
+                            Usuario
+                            <input name="username" required autocomplete="username" maxlength="80">
+                        </label>
+                        <label class="wide">
+                            Contraseña
+                            <input name="password" type="password" required autocomplete="current-password">
+                        </label>
+                    </div>
+                    <button class="button primary block">
+                        Iniciar sesión
+                    </button>
+                </form>
+            </section>
+            <!--
+                El panel se presenta después de confirmar una sesión con la API.
+                Ocultarlo es una decisión visual, no una barrera de seguridad: cada ruta
+                administrativa comprueba la sesión.
+                Los datos privados se solicitan después de la autenticación.
+            -->
+            <section id="admin-screen" hidden>
+                <div class="section-head">
+                    <!--
+                        Pestañas relacionadas con sus paneles mediante aria-controls y aria-
+                        labelledby.
+                        Los botones son type=button para que no envíen accidentalmente ningún
+                        formulario.
+                        admin.js actualiza aria-selected y hidden cuando se elige otra sección.
+                    -->
+                    <nav class="tabs" aria-label="Administración" role="tablist">
+                        <button type="button" class="button" id="products-tab" role="tab" aria-controls="products-panel" aria-selected="true">
+                            Productos
+                        </button>
+                        <button type="button" class="button" id="settings-tab" role="tab" aria-controls="settings-panel" aria-selected="false">
+                            Configuración del negocio
+                        </button>
+                        <button type="button" class="button" id="account-tab" role="tab" aria-controls="account-panel" aria-selected="false">
+                            Mi acceso
+                        </button>
+                    </nav>
+                    <button class="button" id="logout">
+                        Cerrar sesión
+                    </button>
+                </div>
+                <section id="products-panel" role="tabpanel" aria-labelledby="products-tab">
+                    <div id="catalog">
+                        <div class="section-head">
+                            <div>
+                                <h2>
+                                    Tu menú
+                                </h2>
+                                <p class="muted" id="product-count">
+                                </p>
+                            </div>
+                            <div class="actions">
+                                <button class="button" id="reload-products">
+                                    Actualizar lista
+                                </button>
+                                <button class="button orange" id="new-product">
+                                    Agregar producto +
+                                </button>
+                            </div>
+                        </div>
+                        <div class="list" id="admin-list">
+                        </div>
+                    </div>
+                    <!--
+                        Formulario único para altas y cambios de productos.
+                        La referencia editing de admin.js distingue ambas operaciones y conserva la
+                        revisión para detectar conflictos.
+                        Seleccionar una imagen nueva no elimina la anterior hasta que el guardado se
+                        completa.
+                    -->
+                    <form class="panel" id="product-form" hidden>
+                        <h2 id="editor-title">
+                            Editar producto
+                        </h2>
+                        <div class="fields">
+                            <label class="wide">
+                                Nombre *
+                                <input name="name" maxlength="80" required>
+                            </label>
+                            <label>
+                                Precio en MXN *
+                                <input name="price" type="number" min="0.01" max="99999" step="0.01" required>
+                            </label>
+                            <label>
+                                Orden de aparición *
+                                <input name="position" type="number" min="1" max="999" step="1" required>
+                            </label>
+                            <label class="wide">
+                                Descripción
+                                <textarea name="description" rows="3" maxlength="400"></textarea>
+                            </label>
+                            <label class="wide">
+                                Fotografía
+                                <input name="photo" type="file" accept="image/png,image/jpeg,image/webp">
+                                <span class="muted">
+                                    La imagen se ajustará automáticamente al tamaño del menú.
+                                </span>
+                            </label>
+                            <img class="preview-image" id="product-image" alt="Fotografía actual" hidden>
+                            <label class="check">
+                                <input type="checkbox" name="removePhoto">
+                                Quitar fotografía actual
+                            </label>
+                            <label class="check wide">
+                                <input name="available" type="checkbox">
+                                Visible en el menú
+                            </label>
+                        </div>
+                        <div class="actions">
+                            <button class="button primary">
+                                Guardar producto
+                            </button>
+                            <button type="button" class="button" id="cancel-product">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </section>
+                <!--
+                    Configuración compartida con todos los clientes del negocio.
+                    Los controles no se guardan de manera automática al cambiar de pestaña.
+                    El administrador confirma el formulario completo y el servidor revisa su
+                    versión.
+                -->
+                <section id="settings-panel" role="tabpanel" aria-labelledby="settings-tab" hidden>
+                    <h2>
+                        Configuración del negocio
+                    </h2>
+                    <p class="muted spaced">
+                        Los cambios se aplican al menú de todos los clientes.
+                    </p>
+                    <form id="settings-form">
+                        <div class="fields">
+                            <label>
+                                Nombre del negocio *
+                                <input name="name" required maxlength="80">
+                            </label>
+                            <label>
+                                WhatsApp de pedidos
+                                <input name="whatsapp" type="tel" maxlength="20" placeholder="52 + 10 dígitos">
+                            </label>
+                            <label class="wide">
+                                Descripción breve
+                                <input name="tagline" maxlength="140">
+                            </label>
+                            <label class="wide">
+                                Dirección para recoger
+                                <textarea name="address" rows="2" maxlength="400"></textarea>
+                            </label>
+                            <label class="wide">
+                                Enlace de ubicación
+                                <input name="mapUrl" type="url" maxlength="500" placeholder="https://…">
+                            </label>
+                            <label class="wide">
+                                Logo
+                                <input name="logo" type="file" accept="image/png,image/jpeg,image/webp">
+                            </label>
+                            <img class="preview-image" id="logo-image" alt="Logo actual" hidden>
+                            <label class="check">
+                                <input name="removeLogo" type="checkbox">
+                                Quitar logo actual
+                            </label>
+                        </div>
+                        <h3>
+                            Horario de atención
+                        </h3>
+                        <p class="muted">
+                            Hora de Ciudad de México. Marca los días con servicio.
+                        </p>
+                        <!--
+                            admin.js crea un conjunto de controles por cada día de la semana.
+                            La posición de lunes a domingo coincide con el arreglo que almacena la
+                            configuración.
+                            Un día sin servicio queda como null y no exige horas de apertura y cierre.
+                        -->
+                        <div class="hours" id="hours">
+                        </div>
+                        <label class="check spaced">
+                            <input name="scheduleReady" type="checkbox">
+                            He confirmado el horario semanal
+                        </label>
+                        <label class="check">
+                            <input name="catalogConfirmed" type="checkbox">
+                            He confirmado los productos y precios del menú
+                        </label>
+                        <label class="check">
+                            <input name="temporaryClosed" type="checkbox">
+                            Suspender pedidos temporalmente
+                        </label>
+                        <p class="muted spaced">
+                            Hasta confirmar horario, menú y WhatsApp, los pedidos permanecen deshabilitados. Apertura y cierre deben corresponder al mismo día.
+                        </p>
+                        <button class="button primary spaced">
+                            Guardar configuración
+                        </button>
+                    </form>
+                </section>
+                <!--
+                    Sección de personalización del acceso independiente de los datos del
+                    negocio.
+                    El cambio afecta al usuario y la contraseña del único administrador de esta
+                    primera versión.
+                    Al guardarlo se cierran las sesiones abiertas y se solicita una nueva
+                    entrada.
+                -->
+                <section id="account-panel" role="tabpanel" aria-labelledby="account-tab" hidden>
+                    <div class="panel">
+                        <h2>
+                            Mi acceso
+                        </h2>
+                        <p class="muted spaced">
+                            Cambia el usuario y la contraseña del administrador. Al guardar, se cerrarán las sesiones abiertas y tendrás que entrar con el acceso nuevo.
+                        </p>
+                        <!--
+                            Se pide la contraseña actual para confirmar la modificación del acceso.
+                            La nueva contraseña no impone longitud; se comprueba que no esté vacía y
+                            coincida con su confirmación.
+                            Los controles se limpian después de guardar y sus valores no se conservan en
+                            localStorage.
+                        -->
+                        <form id="credentials-form">
+                            <div class="fields">
+                                <label class="wide">
+                                    Contraseña actual *
+                                    <input name="currentPassword" type="password" autocomplete="current-password" required>
+                                </label>
+                                <label class="wide">
+                                    Usuario nuevo *
+                                    <input name="username" autocomplete="username" minlength="3" maxlength="40" pattern="[a-zA-Z0-9._\-]{3,40}" required>
+                                    <span class="muted">
+                                        De 3 a 40 caracteres: letras, números, punto, guion o guion bajo.
+                                    </span>
+                                </label>
+                                <label class="wide">
+                                    Contraseña nueva *
+                                    <input name="newPassword" type="password" autocomplete="new-password" required>
+                                    <span class="muted">
+                                        Elige una contraseña que puedas recordar y confirma el mismo valor abajo.
+                                    </span>
+                                </label>
+                                <label class="wide">
+                                    Repetir contraseña nueva *
+                                    <input name="confirmPassword" type="password" autocomplete="new-password" required>
+                                </label>
+                            </div>
+                            <button class="button primary">
+                                Guardar acceso y cerrar sesiones
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </section>
+            <!--
+                Confirmación antes de eliminar definitivamente un producto.
+                El diálogo ofrece cancelar porque ocultar puede ser suficiente si solo se
+                agotó temporalmente.
+                La eliminación real requiere una petición autenticada con la revisión del
+                registro.
+            -->
+            <dialog id="delete-dialog" aria-labelledby="delete-title">
+                <h2 id="delete-title">
+                    Eliminar producto
+                </h2>
+                <p id="delete-text">
+                </p>
+                <div class="actions">
+                    <button class="button primary" id="confirm-delete">
+                        Eliminar
+                    </button>
+                    <button class="button" id="cancel-delete">
+                        Cancelar
+                    </button>
+                </div>
+            </dialog>
+        </main>
+        <footer class="foot">
+            <span>
+                Aurian · Administración
+            </span>
+            <span>
+                El menú se mantiene visible durante el cierre.
+            </span>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,715 @@
+/* Identidad visual y estilos comunes del menú y la administración. */
+/*
+ * Variables de la identidad aprobada: crema, azul, turquesa, naranja y coral.
+ * Centralizarlas permite ajustar la paleta sin buscar valores en cada
+ * componente.
+ * Los colores de texto y superficie se eligen como pares para conservar
+ * legibilidad.
+ */
+:root {
+    color-scheme: light;
+    --cream: #fff3df;
+    --surface: #fffaf1;
+    --ink: #173954;
+    --muted: #536676;
+    --blue: #174e79;
+    --teal: #10757a;
+    --soft: #d9eeea;
+    --orange: #f3ab65;
+    --coral: #ef8975;
+    --line: #e2d9ca;
+    font: 16px/1.5 system-ui,-apple-system,sans-serif;
+    color: var(--ink);
+    background: var(--cream)
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0
+}
+
+button,input,textarea,select {
+    font: inherit
+}
+
+button,a,input,textarea,select {
+    -webkit-tap-highlight-color: transparent
+}
+
+button {
+    cursor: pointer
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: .55
+}
+
+/*
+ * El foco visible permite recorrer botones y formularios con el teclado.
+ * El contorno se aplica también a enlaces y campos para que la ubicación
+ * actual sea reconocible.
+ * No se elimina el foco para conseguir un aspecto visual más limpio.
+ */
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px
+}
+
+/*
+ * El estado hidden debe prevalecer sobre estilos de distribución como flex o
+ * grid.
+ * Por eso se refuerza con important en esta regla pequeña y específica.
+ * La lógica puede ocultar vistas y campos sin cambiar sus clases de
+ * presentación.
+ */
+[hidden] {
+    display: none!important
+}
+
+a {
+    color: var(--teal)
+}
+
+h1,h2,h3,p {
+    margin: 0
+}
+
+h1,h2 {
+    font-family: Georgia,serif;
+    font-weight: 500
+}
+
+h1 {
+    font-size: clamp(30px,5vw,44px);
+    line-height: 1.15;
+    margin: 10px 0 14px
+}
+
+h2 {
+    font-size: 28px
+}
+
+h3 {
+    font-size: 18px
+}
+
+header {
+    background: var(--blue);
+    color: var(--cream);
+    border-bottom: 5px solid var(--orange)
+}
+
+/*
+ * Limita el ancho del contenido sin limitar el fondo azul del encabezado.
+ * Flex distribuye marca y estado operativo y deja espacio entre ambos.
+ * En el breakpoint móvil puede reorganizarse sin reducir artificialmente el
+ * tamaño del texto.
+ */
+.header-inner {
+    max-width: 1080px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px
+}
+
+.brand {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none
+}
+
+.brand img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: 50%
+}
+
+.word {
+    font: bold 30px Georgia,serif;
+    letter-spacing: 3px
+}
+
+.kicker {
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.5px
+}
+
+.status {
+    font-size: 14px;
+    max-width: 290px
+}
+
+.header-link {
+    color: var(--cream);
+    white-space: nowrap
+}
+
+main {
+    max-width: 1080px;
+    margin: auto;
+    padding: 28px 24px 40px;
+    min-height: 55vh
+}
+
+.hero {
+    padding: 8px 0 28px
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--teal)
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 14px
+}
+
+/*
+ * Grid organiza las tarjetas en tres columnas cuando hay espacio suficiente.
+ * minmax(0,1fr) permite que los elementos se ajusten al ancho de su columna.
+ * Los breakpoints reducen las columnas a dos y luego a una para evitar
+ * desplazamiento horizontal.
+ */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 20px
+}
+
+/*
+ * Superficie compartida entre tarjetas y formularios para mantener una
+ * identidad coherente.
+ * El borde distingue la superficie crema sin depender únicamente de una
+ * sombra.
+ * overflow oculta los extremos de las imágenes dentro de las esquinas
+ * redondeadas.
+ */
+.product,.panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden
+}
+
+.product {
+    display: flex;
+    flex-direction: column
+}
+
+/*
+ * Reserva una proporción estable antes de cargar una fotografía.
+ * Esto evita que las tarjetas cambien de altura bruscamente al terminar la
+ * descarga.
+ * La misma superficie funciona como respaldo cuando un producto aún no tiene
+ * imagen.
+ */
+.photo {
+    aspect-ratio: 16/9;
+    background: var(--soft);
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px
+}
+
+.photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover
+}
+
+/*
+ * Distribución vertical del contenido de la tarjeta.
+ * El texto puede crecer y la fila del precio permanece después de la
+ * descripción.
+ * La tarjeta no necesita una altura fija que recorte productos con nombres o
+ * descripciones más largos.
+ */
+.product-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    flex: 1
+}
+
+.product-content>p {
+    flex: 1
+}
+
+.price-row,.spread {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap
+}
+
+.price {
+    font-size: 22px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500
+}
+
+.primary {
+    background: var(--coral);
+    border-color: var(--coral);
+    font-weight: 650
+}
+
+.orange {
+    background: var(--orange);
+    border-color: var(--orange);
+    font-weight: 650
+}
+
+.teal {
+    background: var(--teal);
+    color: var(--cream);
+    border-color: var(--teal)
+}
+
+/*
+ * Resumen destacado con turquesa para identificar el pedido del cliente.
+ * El contenido puede pasar a otra fila mediante flex-wrap cuando falta
+ * espacio.
+ * No se usa una barra fija que pueda tapar campos o controles en una pantalla
+ * pequeña.
+ */
+.cartbar {
+    margin-top: 24px;
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: var(--teal);
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap
+}
+
+.cartbar .muted {
+    color: var(--cream)
+}
+
+/*
+ * Área de avisos reutilizada para sincronización, errores y confirmaciones.
+ * El texto proviene de textContent en JavaScript y no interpreta contenido
+ * HTML del mensaje.
+ * La clase error cambia el tratamiento visual sin retirar el estado accesible
+ * del elemento.
+ */
+.notice {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--soft);
+    color: var(--ink)
+}
+
+.error {
+    background: #ffe4dd;
+    color: #842e24
+}
+
+.success {
+    color: var(--teal)
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px
+}
+
+.order-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line)
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 12px
+}
+
+.quantity .button {
+    padding: 8px 12px
+}
+
+/*
+ * Dos columnas para formularios amplios y una sola columna en móviles.
+ * La clase wide permite que descripciones y observaciones ocupen todo el
+ * ancho.
+ * Grid mantiene la alineación sin necesitar medidas absolutas para cada campo.
+ */
+.fields {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 18px;
+    margin: 22px 0
+}
+
+.wide {
+    grid-column: 1/-1
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 14px
+}
+
+input,textarea,select {
+    width: 100%;
+    min-width: 0;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 44px;
+    font-size: 16px
+}
+
+textarea {
+    resize: vertical
+}
+
+input[type=checkbox] {
+    width: 20px;
+    min-height: 20px;
+    height: 20px;
+    accent-color: var(--teal)
+}
+
+/*
+ * Las casillas se muestran en la misma fila que su etiqueta.
+ * El contenedor conserva un área suficiente para seleccionar el control en una
+ * pantalla táctil.
+ * La casilla sigue siendo un input nativo, con su comportamiento de teclado y
+ * accesibilidad.
+ */
+.check {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 20px;
+    font-weight: 650;
+    margin: 24px 0 16px
+}
+
+.block {
+    width: 100%
+}
+
+.spaced {
+    margin-top: 20px
+}
+
+.panel {
+    padding: 24px
+}
+
+.narrow {
+    max-width: 480px;
+    margin: 30px auto
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px
+}
+
+/*
+ * El estilo seleccionado depende del mismo atributo que describe el estado
+ * accesible.
+ * Así no se mantiene una segunda clase de selección que pudiera
+ * desincronizarse.
+ * El texto claro se utiliza sobre el turquesa oscuro de la pestaña activa.
+ */
+.tabs [aria-selected=true] {
+    background: var(--teal);
+    color: var(--cream);
+    border-color: var(--teal)
+}
+
+.list {
+    display: grid;
+    gap: 12px
+}
+
+.admin-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px
+}
+
+.admin-detail {
+    flex: 1;
+    min-width: 180px
+}
+
+.badge {
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 20px;
+    padding: 5px 9px;
+    background: var(--soft);
+    color: var(--teal)
+}
+
+.off {
+    background: var(--cream);
+    color: var(--muted)
+}
+
+.hours {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px
+}
+
+/*
+ * Cada día agrupa su casilla y los campos de apertura y cierre.
+ * La estructura de columnas coincide con la relación entre esos controles.
+ * En móviles la casilla ocupa su propia fila y las dos horas permanecen juntas
+ * debajo.
+ */
+.day {
+    display: grid;
+    grid-template-columns: minmax(130px,1fr) minmax(120px,1fr) minmax(120px,1fr);
+    gap: 14px;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line)
+}
+
+.preview-image {
+    width: 120px;
+    height: 90px;
+    object-fit: contain;
+    background: var(--soft);
+    border-radius: 10px
+}
+
+/*
+ * Información complementaria del negocio después del flujo principal de
+ * compra.
+ * Separa dirección y horario con una distribución que pasa a una columna en
+ * móviles.
+ * El borde superior distingue esta información de las tarjetas sin añadir otro
+ * panel pesado.
+ */
+.info {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 24px
+}
+
+.info p,.info ul {
+    margin-top: 8px
+}
+
+.info ul {
+    padding-left: 18px
+}
+
+.foot {
+    max-width: 1080px;
+    margin: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--muted)
+}
+
+.login-note {
+    margin: 14px 0;
+    color: var(--muted);
+    font-size: 14px
+}
+
+/*
+ * La confirmación de eliminación utiliza un diálogo nativo y un ancho
+ * contenido.
+ * El máximo depende del ancho de la pantalla para mantener margen en
+ * teléfonos.
+ * El fondo del diálogo es opaco para que sus controles no se mezclen con el
+ * listado.
+ */
+dialog {
+    max-width: min(480px,calc(100vw - 32px));
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px
+}
+
+dialog::backdrop {
+    background: #17395488
+}
+
+dialog p {
+    margin: 16px 0
+}
+
+/*
+ * Enlace de salto para quien navega con teclado o lector de pantalla.
+ * Normalmente permanece fuera de la vista y aparece al recibir foco.
+ * Permite acceder al contenido principal sin repetir la navegación del
+ * encabezado.
+ */
+.skip {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    background: var(--surface);
+    padding: 10px;
+    z-index: 5
+}
+
+.skip:focus {
+    top: 12px
+}
+
+/* Adaptación de la interfaz a pantallas pequeñas. */
+/*
+ * Adaptación intermedia para tabletas y ventanas de escritorio estrechas.
+ * Dos columnas mantienen tarjetas legibles sin reducir tipografía ni
+ * controles.
+ * La adaptación utiliza el ancho disponible, no un detector de marca o modelo
+ * del dispositivo.
+ */
+@media (max-width:850px) {
+    .grid {
+        grid-template-columns: repeat(2,minmax(0,1fr))
+    }
+}
+
+/* Adaptación de la interfaz a pantallas pequeñas. */
+/*
+ * Adaptación para teléfonos: tarjetas y formularios pasan a una columna.
+ * Las acciones pueden ocupar más filas y el encabezado distribuye el estado
+ * bajo la marca.
+ * Se prioriza que todo control siga accesible, incluso cuando el contenido
+ * ocupa más espacio vertical.
+ */
+@media (max-width:560px) {
+    .header-inner {
+        padding: 18px;
+        align-items: flex-start;
+        flex-wrap: wrap
+    }
+    .status {
+        max-width: 100%;
+        width: 100%
+    }
+    main {
+        padding: 24px 18px 32px
+    }
+    .grid,.fields,.info {
+        grid-template-columns: 1fr
+    }
+    .panel {
+        padding: 18px
+    }
+    .cartbar {
+        padding: 18px
+    }
+    .admin-row>.actions {
+        width: 100%
+    }
+    .day {
+        grid-template-columns: 1fr 1fr
+    }
+    .day>.check {
+        grid-column: 1/-1
+    }
+    .order-line {
+        gap: 10px;
+        flex-wrap: wrap
+    }
+    .quantity {
+        margin-left: auto
+    }
+    .word {
+        font-size: 27px
+    }
+    .brand img {
+        width: 56px;
+        height: 56px
+    }
+    .foot {
+        padding: 18px
+    }
+}

@@ -1,0 +1,86 @@
+{
+    "folders": [
+        {
+            "name": "Aurian",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.wrangler": true,
+            "**/.local": true
+        },
+        "files.encoding": "utf8"
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Aurian: abrir página local",
+                "serverReadyAction": {
+                    "action": "openExternally",
+                    "uriFormat": "%s",
+                    "pattern": "Aurian: (http://127[.]0[.]0[.]1:[0-9]+)"
+                },
+                "request": "launch",
+                "runtimeExecutable": "node",
+                "cwd": "${workspaceFolder}",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ],
+                "console": "integratedTerminal",
+                "internalConsoleOptions": "neverOpen",
+                "program": "${workspaceFolder}/scripts/dev.mjs",
+                "type": "node"
+            }
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "group": {
+                    "isDefault": true,
+                    "kind": "test"
+                },
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                },
+                "args": [
+                    "--test",
+                    "test/*.test.mjs"
+                ],
+                "command": "node",
+                "type": "process",
+                "label": "Aurian: ejecutar pruebas",
+                "problemMatcher": []
+            },
+            {
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                },
+                "args": [
+                    "scripts/admin-key.mjs",
+                    "--show"
+                ],
+                "command": "node",
+                "type": "process",
+                "label": "Aurian: consultar acceso local",
+                "problemMatcher": []
+            },
+            {
+                "label": "Aurian: medir comentarios",
+                "type": "process",
+                "command": "node",
+                "args": [
+                    "scripts/comment-coverage.mjs",
+                    "--check"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                },
+                "problemMatcher": []
+            }
+        ]
+    }
+}

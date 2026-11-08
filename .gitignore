@@ -1,0 +1,8 @@
+.local/
+.dev.vars
+.env*
+node_modules/
+.wrangler/
+*.db
+*.db-shm
+*.db-wal

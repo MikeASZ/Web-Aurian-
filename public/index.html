@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es-MX">
+    <!-- Recursos y metadatos de la página. -->
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Consulta el menú de Aurian, elige tus aguachiles y ceviches y prepara tu pedido por WhatsApp.">
+        <meta name="theme-color" content="#174e79">
+        <title>
+            Aurian · Aguachiles & ceviches
+        </title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="module" src="/menu.js">
+        </script>
+    </head>
+    <body>
+        <a class="skip" href="#main">
+            Saltar al contenido
+        </a>
+        <header>
+            <div class="header-inner">
+                <a class="brand" href="/" aria-label="Aurian, inicio">
+                    <img id="logo" alt="Logo de Aurian" hidden>
+                    <div>
+                        <div class="word" data-business-name>
+                            AURIAN
+                        </div>
+                        <div class="kicker" id="tagline">
+                            Aguachiles &amp; ceviches
+                        </div>
+                    </div>
+                </a>
+                <p class="status" id="status" role="status">
+                    Consultando disponibilidad…
+                </p>
+            </div>
+        </header>
+        <!-- Contenido principal: vistas y formularios del proyecto. -->
+        <main id="main">
+            <div id="notice" class="notice" role="status" hidden>
+            </div>
+            <!--
+                Vista inicial: el catálogo se consulta incluso fuera del horario de
+                atención.
+                Las tarjetas se construyen desde la respuesta de la API y no desde una copia
+                fija de productos en este archivo.
+                La lógica de menú decide si un producto puede aparecer según su
+                disponibilidad.
+            -->
+            <section id="menu-screen">
+                <div class="hero">
+                    <span class="eyebrow">
+                        Frescura del mar
+                    </span>
+                    <h1>
+                        Elige tu próximo antojo.
+                    </h1>
+                    <p class="muted">
+                        Recoge en el negocio o pide a domicilio · CDMX
+                    </p>
+                    <p class="muted spaced" id="sample-label" hidden>
+                        Menú de muestra · Precios pendientes de confirmar.
+                    </p>
+                </div>
+                <!--
+                    Contenedor de las tarjetas que menu.js genera con map y plantillas HTML.
+                    El texto inicial permite entender que la consulta todavía está en proceso.
+                    La etiqueta accesible describe el conjunto sin añadir una categoría al
+                    modelo del negocio.
+                -->
+                <div id="products" class="grid" aria-label="Menú de productos">
+                    <p>
+                        Cargando menú…
+                    </p>
+                </div>
+                <!--
+                    Resumen del carrito conservado en el navegador.
+                    aria-live anuncia las actualizaciones de cantidad e importe sin mover el
+                    foco del cliente.
+                    El botón inicia la revisión del pedido; agregar un producto no abre WhatsApp
+                    por sí mismo.
+                -->
+                <div class="cartbar">
+                    <div aria-live="polite">
+                        <strong id="cart-count">
+                            0 productos
+                        </strong>
+                        <p class="muted">
+                            Subtotal de productos:
+                            <span id="cart-subtotal">
+                                $0.00
+                            </span>
+                        </p>
+                    </div>
+                    <button class="button primary" id="view-order" disabled>
+                        Ver mi pedido
+                    </button>
+                </div>
+            </section>
+            <!--
+                Segunda vista del cliente dentro del mismo documento.
+                hidden permite alternar entre menú y formulario sin perder los valores o el
+                carrito.
+                Las líneas pueden editarse antes de que el servidor revise el pedido
+                completo.
+            -->
+            <section id="order-screen" hidden>
+                <div class="section-head">
+                    <h2>
+                        Mi pedido
+                    </h2>
+                    <button class="button" id="back-menu">
+                        Volver al menú
+                    </button>
+                </div>
+                <div id="order-lines" aria-live="polite">
+                </div>
+                <!--
+                    Los nombres de los controles coinciden con orderInput en el servidor.
+                    required mejora la experiencia de captura, pero el servidor vuelve a validar
+                    los campos.
+                    El callback de submit evita una navegación normal y prepara una petición
+                    JSON.
+                -->
+                <form id="order-form">
+                    <div class="fields">
+                        <label>
+                            Nombre de quien recibe *
+                            <input name="name" autocomplete="name" maxlength="80" required>
+                        </label>
+                        <label>
+                            Tipo de entrega *
+                            <select name="delivery">
+                                <option value="pickup">
+                                    Recoger en el negocio
+                                </option>
+                                <option value="delivery">
+                                    Entrega a domicilio
+                                </option>
+                            </select>
+                        </label>
+                        <!--
+                            El domicilio solo se solicita para entrega a domicilio.
+                            menu.js mantiene hidden, disabled y required sincronizados con la modalidad
+                            elegida.
+                            disabled hace que FormData omita estos campos al recoger, aunque contuvieran
+                            información anterior.
+                        -->
+                        <label data-delivery-field hidden>
+                            Calle y número *
+                            <input name="street" autocomplete="address-line1" maxlength="160" disabled>
+                        </label>
+                        <label data-delivery-field hidden>
+                            Colonia *
+                            <input name="neighborhood" autocomplete="address-line2" maxlength="100" disabled>
+                        </label>
+                        <label class="wide" data-delivery-field hidden>
+                            Referencias del domicilio
+                            <input name="reference" maxlength="200" disabled>
+                        </label>
+                        <label class="wide">
+                            Observaciones del pedido
+                            <textarea name="notes" rows="2" maxlength="300" placeholder="Por ejemplo: sin cebolla"></textarea>
+                        </label>
+                    </div>
+                    <p class="muted" id="pickup-address">
+                    </p>
+                    <!--
+                        La etiqueta cambia entre Total para recogida y Subtotal de productos para
+                        domicilio.
+                        No hay cálculo de envío porque ese cargo queda a discreción del dueño.
+                        El importe mostrado se revisa con precios vigentes en el servidor antes de
+                        preparar el mensaje.
+                    -->
+                    <div class="total">
+                        <span id="total-label">
+                            Total
+                        </span>
+                        <span id="order-total">
+                            $0.00
+                        </span>
+                    </div>
+                    <p class="muted" id="order-status">
+                    </p>
+                    <!--
+                        Comienza deshabilitado hasta obtener disponibilidad del servidor y un
+                        carrito válido.
+                        El servidor puede rechazar la operación si el horario cambia después de
+                        dibujar el botón.
+                        El enlace abre un mensaje preparado; el cliente conserva la decisión de
+                        enviarlo en WhatsApp.
+                    -->
+                    <button class="button primary block spaced" id="checkout" disabled>
+                        Continuar a WhatsApp
+                    </button>
+                    <p class="muted spaced">
+                        Revisa el mensaje y pulsa Enviar en WhatsApp. El negocio confirmará tu pedido en la conversación. Los datos de entrega se incluyen en el mensaje y no se guardan en esta página.
+                    </p>
+                </form>
+            </section>
+            <!--
+                Información pública que se actualiza desde la configuración del negocio.
+                La dirección ayuda a recoger y el horario se interpreta siempre en Ciudad de
+                México.
+                Los enlaces externos se abren sin compartir el contexto de la ventana
+                original.
+            -->
+            <section class="info" aria-label="Información del negocio">
+                <div>
+                    <h3>
+                        Recoge en el negocio
+                    </h3>
+                    <p class="muted" id="business-address">
+                        Dirección pendiente de confirmar.
+                    </p>
+                    <p>
+                        <a id="map-link" target="_blank" rel="noopener noreferrer" hidden>
+                            Ver ubicación
+                        </a>
+                    </p>
+                </div>
+                <div>
+                    <h3>
+                        Horario de atención
+                    </h3>
+                    <div id="business-hours" class="muted">
+                        Horario pendiente de confirmar.
+                    </div>
+                    <p class="muted">
+                        Hora de Ciudad de México.
+                    </p>
+                </div>
+            </section>
+        </main>
+        <footer class="foot">
+            <span>
+                Aurian · Aguachiles &amp; ceviches
+            </span>
+            <a href="/admin">
+                Administración
+            </a>
+        </footer>
+    </body>
+</html>
